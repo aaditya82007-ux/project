@@ -1,0 +1,581 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#f4f7f8" />
+    <title>Patient Intake | Care Handoff Demo</title>
+    <style>
+      :root {
+        color-scheme: light;
+        font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+        color: #172b35;
+        background: #f4f7f8;
+        font-synthesis: none;
+        text-rendering: optimizeLegibility;
+        --teal: #087e78;
+        --teal-dark: #06645f;
+        --ink: #172b35;
+        --muted: #5d6e76;
+        --line: #dce5e8;
+        --surface: #ffffff;
+      }
+
+      * { box-sizing: border-box; }
+
+      body {
+        margin: 0;
+        min-width: 320px;
+      }
+
+      .topbar {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 16px;
+        padding: 18px max(24px, calc((100vw - 1080px) / 2));
+        background: var(--surface);
+        border-bottom: 1px solid var(--line);
+      }
+
+      .brand {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        font-weight: 700;
+        letter-spacing: -0.02em;
+      }
+
+      .brand-mark {
+        display: grid;
+        width: 38px;
+        height: 38px;
+        place-items: center;
+        border-radius: 12px;
+        background: #e0f3f0;
+        color: var(--teal-dark);
+        font-size: 24px;
+        line-height: 1;
+      }
+
+      .brand small {
+        display: block;
+        margin-top: 2px;
+        color: var(--muted);
+        font-size: 12px;
+        font-weight: 500;
+        letter-spacing: 0;
+      }
+
+      .demo-badge {
+        padding: 8px 11px;
+        border: 1px solid #c7e7e2;
+        border-radius: 999px;
+        background: #f0faf8;
+        color: #06645f;
+        font-size: 12px;
+        font-weight: 700;
+        letter-spacing: 0.04em;
+        text-transform: uppercase;
+      }
+
+      main {
+        width: min(100% - 32px, 900px);
+        margin: 48px auto 64px;
+      }
+
+      .intro { margin-bottom: 24px; }
+
+      .eyebrow {
+        margin: 0 0 10px;
+        color: var(--teal-dark);
+        font-size: 12px;
+        font-weight: 800;
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
+      }
+
+      h1 {
+        max-width: 650px;
+        margin: 0;
+        font-size: clamp(30px, 5vw, 46px);
+        line-height: 1.08;
+        letter-spacing: -0.045em;
+      }
+
+      .intro-copy {
+        max-width: 650px;
+        margin: 14px 0 0;
+        color: var(--muted);
+        font-size: 16px;
+        line-height: 1.65;
+      }
+
+      .notice {
+        display: flex;
+        gap: 12px;
+        margin: 24px 0;
+        padding: 16px 18px;
+        border: 1px solid #f0d7aa;
+        border-radius: 14px;
+        background: #fff9ed;
+        color: #664a18;
+        line-height: 1.5;
+      }
+
+      .notice strong { display: block; margin-bottom: 2px; }
+      .notice p { margin: 0; font-size: 14px; }
+      .notice-icon { font-size: 19px; }
+
+      .card {
+        overflow: hidden;
+        border: 1px solid var(--line);
+        border-radius: 18px;
+        background: var(--surface);
+        box-shadow: 0 14px 38px rgb(28 58 68 / 6%);
+      }
+
+      form { padding: 28px; }
+
+      fieldset {
+        margin: 0;
+        padding: 0;
+        border: 0;
+      }
+
+      fieldset + fieldset {
+        margin-top: 28px;
+        padding-top: 26px;
+        border-top: 1px solid var(--line);
+      }
+
+      legend {
+        width: 100%;
+        margin-bottom: 17px;
+        font-size: 17px;
+        font-weight: 750;
+        letter-spacing: -0.02em;
+      }
+
+      .field-grid {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 17px 18px;
+      }
+
+      .field { min-width: 0; }
+      .field.full { grid-column: 1 / -1; }
+
+      label {
+        display: block;
+        margin-bottom: 7px;
+        color: #304650;
+        font-size: 13px;
+        font-weight: 650;
+      }
+
+      .hint {
+        display: block;
+        margin: -3px 0 7px;
+        color: #718087;
+        font-size: 12px;
+      }
+
+      input, textarea {
+        width: 100%;
+        border: 1px solid #cdd9dd;
+        border-radius: 10px;
+        outline: none;
+        background: #fff;
+        color: var(--ink);
+        font: inherit;
+        font-size: 14px;
+        transition: border-color 140ms ease, box-shadow 140ms ease;
+      }
+
+      input[type="checkbox"] {
+        width: 18px;
+        min-height: 18px;
+        margin: 1px 0 0;
+        accent-color: var(--teal);
+      }
+
+      .consent {
+        display: flex;
+        align-items: flex-start;
+        gap: 10px;
+        margin-top: 25px;
+        color: #40545c;
+        font-size: 13px;
+        font-weight: 550;
+        line-height: 1.5;
+      }
+
+      input { min-height: 44px; padding: 10px 12px; }
+      textarea { min-height: 94px; padding: 11px 12px; resize: vertical; }
+
+      input:focus, textarea:focus {
+        border-color: var(--teal);
+        box-shadow: 0 0 0 3px rgb(8 126 120 / 13%);
+      }
+
+      input::placeholder, textarea::placeholder { color: #96a4aa; }
+
+      .actions {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        gap: 11px;
+        margin-top: 28px;
+      }
+
+      button {
+        min-height: 45px;
+        padding: 0 17px;
+        border: 1px solid transparent;
+        border-radius: 10px;
+        cursor: pointer;
+        font: inherit;
+        font-size: 14px;
+        font-weight: 700;
+      }
+
+      .primary { background: var(--teal); color: #fff; }
+      .primary:hover { background: var(--teal-dark); }
+      .primary:disabled { cursor: wait; opacity: 0.65; }
+      .secondary { border-color: var(--line); background: #fff; color: #3d515a; }
+      .secondary:hover { background: #f6f9fa; }
+      button:focus-visible { outline: 3px solid #85cbc4; outline-offset: 2px; }
+
+      .privacy-note {
+        margin: 16px 0 0;
+        color: var(--muted);
+        font-size: 12px;
+        line-height: 1.5;
+      }
+
+      .report { margin-top: 24px; padding: 26px 28px; }
+      .report[hidden] { display: none; }
+
+      .report-heading {
+        display: flex;
+        align-items: flex-start;
+        justify-content: space-between;
+        gap: 16px;
+        padding-bottom: 18px;
+        border-bottom: 1px solid var(--line);
+      }
+
+      .report h2 { margin: 0; font-size: 21px; letter-spacing: -0.03em; }
+      .report-subtitle { margin: 6px 0 0; color: var(--muted); font-size: 13px; }
+      .report-label {
+        flex: 0 0 auto;
+        padding: 7px 9px;
+        border-radius: 8px;
+        background: #eef5f6;
+        color: #405a62;
+        font-size: 11px;
+        font-weight: 800;
+        letter-spacing: 0.06em;
+        text-transform: uppercase;
+      }
+
+      dl { margin: 6px 0 0; }
+
+      .report-row {
+        display: grid;
+        grid-template-columns: minmax(170px, 0.75fr) minmax(0, 1.5fr);
+        gap: 14px;
+        padding: 12px 0;
+        border-bottom: 1px solid #edf1f2;
+      }
+
+      .report-row:last-child { border-bottom: 0; }
+      dt { color: #61727a; font-size: 13px; font-weight: 600; }
+      dd { margin: 0; color: var(--ink); font-size: 14px; line-height: 1.5; overflow-wrap: anywhere; }
+
+      .handoff-status {
+        margin: 18px 0 0;
+        padding: 14px 15px;
+        border-radius: 11px;
+        background: #f3f7f8;
+        color: #40545c;
+        font-size: 13px;
+        line-height: 1.5;
+      }
+
+      .ai-assessment {
+        margin-top: 20px;
+        padding: 18px;
+        border: 1px solid #cfe5e2;
+        border-radius: 13px;
+        background: #f5fbfa;
+      }
+
+      .ai-assessment h3 {
+        margin: 0;
+        font-size: 15px;
+        letter-spacing: -0.01em;
+      }
+
+      .ai-status {
+        margin: 8px 0 0;
+        color: var(--muted);
+        font-size: 13px;
+        line-height: 1.5;
+      }
+
+      .ai-result {
+        margin-top: 14px;
+        padding-top: 14px;
+        border-top: 1px solid #dcebe8;
+        color: #263d46;
+        font-size: 14px;
+        line-height: 1.65;
+        white-space: pre-wrap;
+        overflow-wrap: anywhere;
+      }
+
+      .ai-result[hidden] { display: none; }
+
+      footer {
+        margin-top: 22px;
+        color: #74838a;
+        font-size: 12px;
+        line-height: 1.55;
+        text-align: center;
+      }
+
+      @media (max-width: 620px) {
+        .topbar { padding: 14px 16px; }
+        main { width: min(100% - 24px, 900px); margin-top: 32px; }
+        form, .report { padding: 21px 18px; }
+        .field-grid { grid-template-columns: 1fr; gap: 15px; }
+        .field.full { grid-column: auto; }
+        .report-row { grid-template-columns: 1fr; gap: 4px; }
+        .demo-badge { padding: 7px 9px; font-size: 10px; }
+      }
+    </style>
+  </head>
+  <body>
+    <header class="topbar">
+      <div class="brand" aria-label="Care Handoff Demo">
+        <span class="brand-mark" aria-hidden="true">+</span>
+        <span>Care Handoff<small>Patient intake demo</small></span>
+      </div>
+      <span class="demo-badge">Fictional data only</span>
+    </header>
+
+    <main>
+      <section class="intro" aria-labelledby="page-title">
+        <p class="eyebrow">Patient intake</p>
+        <h1 id="page-title">Help the care team understand what’s going on.</h1>
+        <p class="intro-copy">Share the symptoms, relevant history, medicines, allergies, and available readings. This demo organizes those details into a handoff for a clinician.</p>
+      </section>
+
+      <aside class="notice" aria-label="Demo safety notice">
+        <span class="notice-icon" aria-hidden="true">ⓘ</span>
+        <div>
+          <strong>Prototype for fictional cases only</strong>
+                <p>Do not enter real patient information. The AI may list possible explanations for a fictional case, but it cannot diagnose, rule out an emergency, or recommend treatment. It must not be used to make real care decisions.</p>
+                <p>To run the AI locally, start <code>python server.py</code> in the project folder and open <code>http://127.0.0.1:8000</code>. Opening this file directly or using GitHub Pages does not run the Python backend.</p>
+        </div>
+      </aside>
+
+      <section class="card" aria-label="Patient details form">
+        <form id="intake-form">
+          <fieldset>
+            <legend>About the patient</legend>
+            <div class="field-grid">
+              <div class="field">
+                <label for="age">Age</label>
+                <input id="age" name="age" type="text" inputmode="numeric" placeholder="For example, 42" />
+              </div>
+              <div class="field">
+                <label for="sex-gender">Sex or gender (optional)</label>
+                <span class="hint">As the patient describes it, if relevant.</span>
+                <input id="sex-gender" name="sex-gender" type="text" placeholder="Enter a fictional response" />
+              </div>
+            </div>
+          </fieldset>
+
+          <fieldset>
+            <legend>Symptoms and health history</legend>
+            <div class="field-grid">
+              <div class="field full">
+                <label for="symptoms">What symptoms are they feeling?</label>
+                <textarea id="symptoms" name="symptoms" placeholder="Describe the fictional patient's symptoms"></textarea>
+              </div>
+              <div class="field full">
+                <label for="onset">When did the symptoms start?</label>
+                <input id="onset" name="onset" type="text" placeholder="Start time, duration, or changes over time" />
+              </div>
+              <div class="field full">
+                <label for="conditions">Past diseases or health conditions</label>
+                <textarea id="conditions" name="conditions" placeholder="List relevant fictional history"></textarea>
+              </div>
+              <div class="field">
+                <label for="medications">Current medicines and doses</label>
+                <textarea id="medications" name="medications" placeholder="Medicine name and dosage"></textarea>
+              </div>
+              <div class="field">
+                <label for="allergies">Allergies</label>
+                <textarea id="allergies" name="allergies" placeholder="Medicine or other allergies"></textarea>
+              </div>
+            </div>
+          </fieldset>
+
+          <fieldset>
+            <legend>Available readings</legend>
+            <div class="field-grid">
+              <div class="field">
+                <label for="heart-rate">Heart rate</label>
+                <input id="heart-rate" name="heart-rate" type="text" placeholder="For example, 88 bpm" />
+              </div>
+              <div class="field">
+                <label for="blood-pressure">Blood pressure</label>
+                <input id="blood-pressure" name="blood-pressure" type="text" placeholder="For example, 120/80 mmHg" />
+              </div>
+              <div class="field">
+                <label for="glucose">Glucose</label>
+                <input id="glucose" name="glucose" type="text" placeholder="Include the unit" />
+              </div>
+              <div class="field">
+                <label for="reading-source">Reading source and time</label>
+                <input id="reading-source" name="reading-source" type="text" placeholder="Monitor/report and measurement time" />
+              </div>
+              <div class="field full">
+                <label for="additional-notes">Anything else to include?</label>
+                <textarea id="additional-notes" name="additional-notes" placeholder="Optional fictional details for the care team"></textarea>
+              </div>
+            </div>
+          </fieldset>
+
+          <label class="consent" for="fictional-confirmation">
+            <input id="fictional-confirmation" name="fictional-confirmation" type="checkbox" required />
+            <span>I confirm that these are fictional details for a project demo.</span>
+          </label>
+
+          <div class="actions">
+            <button id="analyze-button" class="primary" type="submit">Analyze fictional case</button>
+            <button class="secondary" type="reset">Clear form</button>
+          </div>
+          <p class="privacy-note">Submitting sends the fictional case to Sarvam through the local app server. Sarvam workspace data-retention settings apply; its default is indefinite retention until an owner changes it. Use fictional details only.</p>
+        </form>
+      </section>
+
+      <section id="handoff-card" class="card report" aria-labelledby="handoff-title" aria-live="polite" hidden>
+        <div class="report-heading">
+          <div>
+            <h2 id="handoff-title">Clinician handoff</h2>
+            <p class="report-subtitle">Factual intake summary from the information entered above.</p>
+          </div>
+          <span class="report-label">Demo summary</span>
+        </div>
+        <dl id="handoff-details"></dl>
+        <p class="handoff-status"><strong>Safety:</strong> This is a model-generated educational simulation, not a diagnosis. It cannot determine whether a real person is safe or rule out an emergency.</p>
+        <div class="ai-assessment">
+          <h3>Possible explanations for this fictional case</h3>
+          <p id="ai-status" class="ai-status" role="status" aria-live="polite">Submit the fictional case to generate an educational response.</p>
+          <div id="ai-result" class="ai-result" hidden></div>
+        </div>
+      </section>
+
+      <footer>Care Handoff is a prototype demonstration, not a clinical service. Use fictional details only.</footer>
+    </main>
+
+    <script>
+      const form = document.getElementById("intake-form");
+      const handoffCard = document.getElementById("handoff-card");
+      const handoffDetails = document.getElementById("handoff-details");
+      const fictionalConfirmation = document.getElementById("fictional-confirmation");
+      const analyzeButton = document.getElementById("analyze-button");
+      const aiStatus = document.getElementById("ai-status");
+      const aiResult = document.getElementById("ai-result");
+      const fields = [
+        ["age", "Age"],
+        ["sex-gender", "Sex or gender"],
+        ["symptoms", "Symptoms"],
+        ["onset", "Symptom start / duration"],
+        ["conditions", "Past conditions"],
+        ["medications", "Current medicines and doses"],
+        ["allergies", "Allergies"],
+        ["heart-rate", "Heart rate"],
+        ["blood-pressure", "Blood pressure"],
+        ["glucose", "Glucose"],
+        ["reading-source", "Reading source / time"],
+        ["additional-notes", "Additional notes"],
+      ];
+
+      form.addEventListener("submit", async (event) => {
+        event.preventDefault();
+        handoffDetails.replaceChildren();
+
+        const fictionalCase = {};
+
+        for (const [id, label] of fields) {
+          const row = document.createElement("div");
+          row.className = "report-row";
+
+          const term = document.createElement("dt");
+          term.textContent = label;
+
+          const detail = document.createElement("dd");
+          const value = document.getElementById(id).value.trim();
+          fictionalCase[id] = value || "Not provided";
+          detail.textContent = fictionalCase[id];
+
+          row.append(term, detail);
+          handoffDetails.append(row);
+        }
+
+        handoffCard.hidden = false;
+        aiResult.hidden = true;
+        aiResult.textContent = "";
+        aiStatus.textContent = "Sending the fictional case to Sarvam for an educational response…";
+        analyzeButton.disabled = true;
+        analyzeButton.textContent = "Analyzing…";
+
+        try {
+          const response = await fetch("/api/assess", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              case: fictionalCase,
+              synthetic_case_confirmed: fictionalConfirmation.checked,
+            }),
+          });
+          const contentType = response.headers.get("Content-Type") || "";
+          if (!contentType.includes("application/json")) {
+            throw new Error("The AI backend is unavailable here. Run python server.py from the project folder and open http://127.0.0.1:8000.");
+          }
+          const result = await response.json();
+          if (!response.ok) {
+            throw new Error(result.error || "The local assessment server could not complete the request.");
+          }
+
+          aiResult.textContent = result.assessment;
+          aiResult.hidden = false;
+          aiStatus.textContent = "Generated for this fictional case only. It is not a diagnosis or emergency assessment.";
+          handoffCard.scrollIntoView({ behavior: "smooth", block: "start" });
+        } catch (error) {
+          aiStatus.textContent = error instanceof TypeError
+            ? "Could not reach the AI backend. Run python server.py from the project folder and open http://127.0.0.1:8000."
+            : error.message || "Could not reach the local server. Start it with python server.py and try again.";
+        } finally {
+          analyzeButton.disabled = false;
+          analyzeButton.textContent = "Analyze fictional case";
+        }
+      });
+
+      form.addEventListener("reset", () => {
+        handoffCard.hidden = true;
+        handoffDetails.replaceChildren();
+        aiResult.hidden = true;
+        aiResult.textContent = "";
+        aiStatus.textContent = "Submit the fictional case to generate an educational response.";
+      });
+    </script>
+  </body>
+</html>
+
